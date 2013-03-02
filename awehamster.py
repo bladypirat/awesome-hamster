@@ -58,7 +58,7 @@ class AwesomeHamster(gobject.GObject):
 
     def _refresh(self):
         startTime = 0
-        facts = self.ifaceHamster.GetFacts(0,0,"")
+        facts = self.ifaceHamster.GetTodaysFacts()
 
         if len(facts) > 0:
             f = facts[-1]
