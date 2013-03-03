@@ -29,6 +29,9 @@ class AwesomeHamster(gobject.GObject):
     _options = { }
     _options["name"] = 'myawehamsterbox'
     _options["format"] = '{activity}@{category} {currentHours}:{currentMinutes}'
+    _options["default"] = 'no activity'
+    _options["sbefore"] = '<span>'
+    _options["safter"] = '</span>'
     _options["tag"] = None
 
     def __init__(self,options=None):
@@ -101,22 +104,39 @@ class AwesomeHamster(gobject.GObject):
                 tagHours = tagMinutes / 60
                 tagMinutes = tagMinutes - (tagHours * 60)
 
+        widgetTextFormat = '{widget}.text = \'{sbefore}{contents}{safter}\''
+        widgetContents = ''
 
         if currentFact is None or currentFact["endTime"] != 0:
             print "No activity"
-            self.ifaceAwesome.Eval('{widget}.text = \'<span color=\"white\"> No Activity</span>\''.format(widget = self._options["name"]))
+            widgetContents = 'no activity'
         else:
             currentMinutes = currentFact["elapsedTime"] / 60
             currentHours = currentMinutes / 60
             currentMinutes = currentMinutes - (currentHours * 60)
+            widgetContents = self._options["format"].format(
+                activity = currentFact["activity"], 
+                category = currentFact["category"],  
+                tag = self._options["tag"],
+                currentHours = self._pretty_format(currentHours), 
+                currentMinutes = self._pretty_format(currentMinutes), 
+                totalHours = self._pretty_format(totalHours), 
+                totalMinutes = self._pretty_format(totalMinutes), 
+                tagHours = self._pretty_format(tagHours), 
+                tagMinutes = self._pretty_format(tagMinutes)
+                )
+            print widgetContents
 
-            format = self._options["format"].format(
-                activity = currentFact["activity"], category = currentFact["category"],  tag = self._options["tag"],
-                currentHours = self._pretty_format(currentHours), currentMinutes = self._pretty_format(currentMinutes), 
-                totalHours = self._pretty_format(totalHours), totalMinutes = self._pretty_format(totalMinutes), 
-                tagHours = self._pretty_format(tagHours), tagMinutes = self._pretty_format(tagMinutes))
-            print format
-            self.ifaceAwesome.Eval('{widget}.text = \'<span color=\"white\"> {format} </span>\''.format(widget = self._options["name"], format=format))
+        widgetUpdate = widgetTextFormat.format(
+            widget = self._options["name"], 
+            sbefore = self._options["sbefore"],
+            safter = self._options["safter"],
+            contents = widgetContents
+            )
+
+        self.ifaceAwesome.Eval(widgetUpdate)
+
+        print widgetUpdate
 
         return True
 
@@ -133,7 +153,7 @@ def main(argv):
     try:
 
         # parse out valid options from argv
-        opts,args = getopt.getopt ( argv, "n:f:t:", ["name=", "format=", "tag="] )
+        opts,args = getopt.getopt ( argv, "n:f:t:d:b:a:", ["name=", "format=", "tag=", "default=", "before=", "after="] )
 
     except getopt.GetoptError:
 
@@ -142,8 +162,10 @@ def main(argv):
         sys.exit(2)
 
     for opt,arg in opts:
+
         if opt == "-n":
             options['name'] = arg
+
         elif opt == "-f":
             # convert format string into something str.format() friendly
             arg = arg.replace("%a", "{activity}")
@@ -156,8 +178,21 @@ def main(argv):
             arg = arg.replace("%hT", "{tagHours}")
             arg = arg.replace("%mT", "{tagMinutes}")
             options['format'] = arg
+
+        elif opt == "-b":
+            options["sbefore"] = arg
+
+        elif opt == "-a":
+            print arg
+            options["safter"] = arg
+
         elif opt == "-t":
             options["tag"] = arg
+
+        elif opt == "-d":
+            options["default"] = arg
+
+    print options
 
     awehamster = AwesomeHamster ( options )
     awehamster.run()
