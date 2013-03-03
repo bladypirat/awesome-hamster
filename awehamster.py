@@ -60,6 +60,7 @@ class AwesomeHamster(gobject.GObject):
         self._refresh()
 
     def _refresh(self):
+
         totalTime = 0
         tagTime = 0
         currentFact = None
