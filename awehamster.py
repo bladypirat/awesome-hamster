@@ -184,16 +184,27 @@ def main(argv):
             options['format'] = arg
 
         elif opt == "-b":
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+
             options["sbefore"] = arg
 
         elif opt == "-a":
-            print arg
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+
             options["safter"] = arg
 
         elif opt == "-t":
             options["tag"] = arg
 
         elif opt == "-d":
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+            
             options["default"] = arg
 
     print options
