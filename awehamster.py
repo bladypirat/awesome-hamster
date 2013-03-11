@@ -63,7 +63,6 @@ class AwesomeHamster(gobject.GObject):
         self._refresh()
 
     def _refresh(self):
-
         totalTime = 0
         tagTime = 0
         currentFact = None
@@ -110,7 +109,7 @@ class AwesomeHamster(gobject.GObject):
 
         if currentFact is None or currentFact["endTime"] != 0:
             print "No activity"
-            widgetContents = 'no activity'
+            widgetContents = self._options["default"]
         else:
             currentMinutes = currentFact["elapsedTime"] / 60
             currentHours = currentMinutes / 60
@@ -168,6 +167,10 @@ def main(argv):
             options['name'] = arg
 
         elif opt == "-f":
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+
             # convert format string into something str.format() friendly
             arg = arg.replace("%a", "{activity}")
             arg = arg.replace("%c", "{category}")
@@ -181,16 +184,27 @@ def main(argv):
             options['format'] = arg
 
         elif opt == "-b":
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+
             options["sbefore"] = arg
 
         elif opt == "-a":
-            print arg
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+
             options["safter"] = arg
 
         elif opt == "-t":
             options["tag"] = arg
 
         elif opt == "-d":
+            # escape any passed in curly brackets to ensure we don't break str.format
+            arg = arg.replace("{", "{{")
+            arg = arg.replace("}", "}}")
+            
             options["default"] = arg
 
     print options
