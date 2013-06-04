@@ -2,6 +2,7 @@
 import os
 import dbus
 import gtk
+import pipes
 
 class AwesomeHamsterGui():
     def __init__(self):
@@ -29,7 +30,7 @@ class AwesomeHamsterGui():
     def _on_entry_activate(self, entry):
         text = entry.get_text()
         if text != '':
-            os.system('hamster-cli start ' + text)
+            os.system('hamster-cli start ' + pipes.quote(text))
             self.dialog.destroy()
         
 
